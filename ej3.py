@@ -25,6 +25,7 @@ Armadura1 = Armaduras('TK-421', 10)
 Armadura2 = Armaduras('8-8-8', 10)
 Armadura3 = Armaduras('6-6-6', 10)
 Lista = [Armadura1, Armadura2, Armadura3]
+
 #mostramos por pantalla la armadura 1
 print(Armadura1)
 
