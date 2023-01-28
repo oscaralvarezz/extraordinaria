@@ -1,71 +1,110 @@
-#Creamos la clase
-class Grafo:
- 
-    def __init__(self, num_nodos, dirigido=True):
-        self.num_nodos = num_nodos
-        self.dirigido = dirigido
+# El codigo Huffman ha sido extraído del ejercicio que hecho en clase.
+class Nodo():
+    def __init__(self, izq=None, der=None):
+        self.izq= izq
+        self.der=der
     
-        self.lista_de_vertices = []
+    def hijo(self):
+        return self.izq, self.der
 
-    def añadir_vertices(self, nodo1, nodo2, peso=1):        
-        self.lista_de_vertices.append((nodo1, nodo2, peso))
+#Creamos el arbol binario
+def arbol(dict_frec):
 
-        if not self.dirigido:
-            self.lista_de_vertices.append((nodo2, nodo1, peso))
+    #Inicialmente convertimos en una lista el diccionario de frecuencias.
+    list_frec= list(dict_frec)
 
-    def lista_vertices(self):
-        num_vertices = len(self.lista_de_vertices)
-        for i in range(num_vertices):
-            print("vértice", i+1, ": ", self.lista_de_vertices[i])
+    #Posteriormente generamos los nodos del arbol binario
+    while len(list_frec) > 1:
+        val1, frec1 =list_frec[0]
+        val2, frec2 =list_frec[1]
+        nodo=Nodo(val1, val2)
+        list_frec.append((nodo, frec1+frec2))
+        list_frec= sorted(list_frec, key=lambda x: x[1], reverse=False)
+        list_frec= list_frec[2:]
+    return list_frec[0]
 
-grafo = Grafo(17, False)
+#Ahora implementamos la codificación de Huffman y se "calcula" la tabla de codificación
+def huffman(arbol, codigo=''):
+    if type(arbol) is str:
+        return {arbol: codigo}
 
-#añadimos los vértices al grafo
-grafo.añadir_vertices("Aldeeran", 'Endor', 5)
-grafo.añadir_vertices("Dagobah", 'Scarif', 1)
-grafo.añadir_vertices('Alderaan', 'planeta1', 2)
-grafo.añadir_vertices('Tierra', 'Knowhere', 5)
-grafo.añadir_vertices('Zen-Whoberi', 'Endor', 9)
-grafo.añadir_vertices('Endor', 'Vomir', 4)
-grafo.añadir_vertices('Hoth', 'tatooine', 20)
-grafo.añadir_vertices("Kamino", 'Tatooine', 1)
-grafo.añadir_vertices("Dagobah", 'Hoth', 12)
-grafo.añadir_vertices('Kamiro', 'Naboo', 8)
-grafo.añadir_vertices('planeta1', 'planeta3', 11)
-grafo.añadir_vertices('planeta1', 'planeta6', 7)
-grafo.añadir_vertices('planeta5', 'planeta1', 4)
-grafo.añadir_vertices('Mustafar', 'Titan', 6)
-grafo.añadir_vertices('planeta2', 'Nidavellir', 3)
+    #Creamos un diccionario para las claves de Huffman para cada nodo (0 y 1)
+    izq, der = arbol.hijo()
+    dict_huffman = dict()
+    dict_huffman.update(huffman(izq, codigo + '0'))
+    dict_huffman.update(huffman(der, codigo + '1'))
+    
+    return dict_huffman
 
-grafo.lista_vertices()
+#Creamos una función para codificar el mensaje.
+def codificar(cadena, huff):
+    codigo = ''
+    for letra in cadena:
+        codigo= codigo + huff[letra]
+    return codigo
 
-from heapq import *
-from collections import defaultdict
+#Creamos ahora la función para decodificar el mensaje cogiendo el árbol realizado.
+def decodificar(codificado, raiz, nodo, decodificado=''):
+    #Ahora iteramos sobre los nodos y exrtraemos el mensaje decodificado
+    for valor in codificado:
+        if valor == '0':
+            nodo= nodo.izq
+        else:
+            nodo= nodo.der
+        if type(nodo) is str:
+            decodificado= decodificado + nodo
+            nodo= raiz
+    return decodificado
 
-#hacemos el algoritmo de dijkstra para hallar la ruta más corta.
-def dijkstra(vertices, f, t):
-    g = defaultdict(list)
-    for l, r, c in vertices:
-        g[l].append((c, r))
-    print(g)
-    q, seen, mins = [(0, f, [])], set(), {f: 0}
-    while q:
-        (cost, v1, path) = heappop(q)
-        if v1 not in seen:
-            seen.add(v1)
-            path = [v1] + path
-            if v1 == t:
-                return (cost, path)
-            for c, v2 in g.get(v1, ()):
-                if v2 in seen:
-                    continue
-                prev = mins.get(v2, None)
-                next = cost + c
-                if prev is None or next < prev:
-                    mins[v2] = next
-                    heappush(q, (next, v2, path))
+'''La siguiente función devuelve el peso de cada frecuencia sobre 
+el total dado a una cadena o una tabla de frecuencias'''
 
-    return (float("inf"), [])
+def ordenar(cadena):
+    #Hacemos un diccionario para almacenar los valores por si hacemos la tabla de frecuencias en base a 
+    #un string (no a un diccionario)
+    dict_contador = dict()
+    
+    '''Si el input que hacemos no es un diccionario, creara una tabla de frecuencias en base al string,
+    de lo contrario, tomará directamente el diccionario como el argumento'''
+    if type(cadena) is not dict:
+        for letra in set(cadena):
+            dict_contador[letra] = []
 
-#Finalmente, mostramos por pantalla los vértices y su longitud
-vertices = grafo.lista_de_vertices
+        for letra in cadena:
+            dict_contador[letra].append(1)
+    
+        for letra in dict_contador:
+            dict_contador[letra] = sum(dict_contador[letra])
+    else:
+        dict_contador = cadena
+    
+    suma_total= sum(dict_contador.values())
+    dict_frecuencias = dict()
+
+    #Iteramos sobre cada valor del diccionario para sacar su peso proporcional en la tabla
+    for letra in dict_contador:
+        dict_frecuencias[letra]=dict_contador[letra]/suma_total
+
+    #Ordenamos el diccionario nuevo
+    frecuencias_ordenadas=sorted(dict_frecuencias.items(), key=lambda x: x[1], reverse=False)
+    return frecuencias_ordenadas
+
+#Cogemos la cadena de texto
+frecuencias = {"a":0.2,"f":0.17,"1":0.13,"3":0.21,"0":0.05,"m":0.09,"t":0.15}
+
+# Ordenamos la tabla de valores para sacar el peso de cada valor.
+peso_frec = ordenar(frecuencias)
+    
+#Creamos el nuevo árbol
+arbol = arbol(peso_frec)
+
+#Añadimos los valores de Huffman
+huff=huffman(arbol[0])
+
+#Codificamos el mensaje
+mensaje_codificado = codificar(frecuencias, huff)
+print(f"El mensaje codificado es: {mensaje_codificado}")
+
+#Decodificamos el mensaje
+mensaje_decodificado = decodificar(mensaje_codificado, arbol[0], arbol[0])
+print(f"El mensaje decodificado es: {mensaje_decodificado}")
