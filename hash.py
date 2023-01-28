@@ -1,6 +1,6 @@
 #Código de tabla Hash
 def crear_tabla(tamanio):
-    """Crear una tabla hash vacia"""
+    """Crear una tabla hash vacía"""
     tabla = [None]*tamanio
     return tabla
 
@@ -9,7 +9,7 @@ def cantidad_elementos(tabla):
     return len(tabla) - tabla.count(None)
 
 def funcion_hash(dato, tamanio_tabla):
-    """Determina la posicion del dato en la tabla"""
+    """Determina la posición del dato en la tabla"""
     return len(str(dato).strip()) % tamanio_tabla
 
 def agregar(tabla, dato, convert):
@@ -21,12 +21,12 @@ def agregar(tabla, dato, convert):
         else:
             tabla[posicion] = dato
     else:
-        print("Se produjo una colision")
+        print("Se produjo una colisión")
     
-""" Si se produce dicha colisión, ejecuta función de sondeo para reubicar el elemento """
+#Si se produce dicha colisión, ejecuta función de sondeo para reubicar el elemento
 
 def buscar(tabla, buscado):
-    """ Determina si un elemento existe en la tabla y determina su posición. """
+    #Determina si un elemento existe en la tabla y determina su posición.
     pos = None
     posicion = funcion_hash(buscado, len(tabla))
     if (tabla[posicion] is not None):
