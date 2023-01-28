@@ -1,45 +1,71 @@
-from hash import *
-import random
+#Creamos la clase
+class Grafo:
+ 
+    def __init__(self, num_nodos, dirigido=True):
+        self.num_nodos = num_nodos
+        self.dirigido = dirigido
+    
+        self.lista_de_vertices = []
 
-def generador():
-    lista_naves = []
-    for i in range(2000):
-        naves = random.choice(["FL", "TF", "TK"," CT", "FN"," FO"])
-        numero = random.randint(1000,9999)
-        nave = numero + "-" + naves
-        lista_naves.append(nave)
-    return lista_naves, naves, numero
+    def añadir_vertices(self, nodo1, nodo2, peso=1):        
+        self.lista_de_vertices.append((nodo1, nodo2, peso))
 
+        if not self.dirigido:
+            self.lista_de_vertices.append((nodo2, nodo1, peso))
 
-naves, nav, numero = generador()
-hash1 = crear_tabla(len(naves))
-hash2 = crear_tabla(len(naves))
+    def lista_vertices(self):
+        num_vertices = len(self.lista_de_vertices)
+        for i in range(num_vertices):
+            print("vértice", i+1, ": ", self.lista_de_vertices[i])
 
-for nave in naves:
-    agregar(hash1, nave[:1], convert="")
-    agregar(hash2, nave[3:], convert="")
+grafo = Grafo(17, False)
 
+#añadimos los vértices al grafo
+grafo.añadir_vertices("Aldeeran", 'Endor', 5)
+grafo.añadir_vertices("Dagobah", 'Scarif', 1)
+grafo.añadir_vertices('Alderaan', 'planeta1', 2)
+grafo.añadir_vertices('Tierra', 'Knowhere', 5)
+grafo.añadir_vertices('Zen-Whoberi', 'Endor', 9)
+grafo.añadir_vertices('Endor', 'Vomir', 4)
+grafo.añadir_vertices('Hoth', 'tatooine', 20)
+grafo.añadir_vertices("Kamino", 'Tatooine', 1)
+grafo.añadir_vertices("Dagobah", 'Hoth', 12)
+grafo.añadir_vertices('Kamiro', 'Naboo', 8)
+grafo.añadir_vertices('planeta1', 'planeta3', 11)
+grafo.añadir_vertices('planeta1', 'planeta6', 7)
+grafo.añadir_vertices('planeta5', 'planeta1', 4)
+grafo.añadir_vertices('Mustafar', 'Titan', 6)
+grafo.añadir_vertices('planeta2', 'Nidavellir', 3)
 
-    if buscar(hash1,"FN")!=None or buscar(hash2,"2187")!=None:
-        quitar(hash1,"FN")
-        quitar(hash2,"2187")
+grafo.lista_vertices()
 
-    nuevas_naves = []
-    for i in range(len(nav)):
-        if numero[i]=="781" or numero[i]=="537":
-            nuevas_naves.append(naves[i])
+from heapq import *
+from collections import defaultdict
 
-    print(f"Las naves son: {nuevas_naves}")
+#hacemos el algoritmo de dijkstra para hallar la ruta más corta.
+def dijkstra(vertices, f, t):
+    g = defaultdict(list)
+    for l, r, c in vertices:
+        g[l].append((c, r))
+    print(g)
+    q, seen, mins = [(0, f, [])], set(), {f: 0}
+    while q:
+        (cost, v1, path) = heappop(q)
+        if v1 not in seen:
+            seen.add(v1)
+            path = [v1] + path
+            if v1 == t:
+                return (cost, path)
+            for c, v2 in g.get(v1, ()):
+                if v2 in seen:
+                    continue
+                prev = mins.get(v2, None)
+                next = cost + c
+                if prev is None or next < prev:
+                    mins[v2] = next
+                    heappush(q, (next, v2, path))
 
+    return (float("inf"), [])
 
-legion_ct = []
-legion_tf = []
-for i in range(len(nav)):
-    if nav[i]=="CT":
-        legion_ct.append(naves[i])
-    elif nav[i]=="TF":
-        legion_tf.append(naves[i])
-
-
-print(f"Las naves que contienen CT son: {legion_ct}")
-print(f"Las naves que contienen CT son: {legion_tf}")
+#Finalmente, mostramos por pantalla los vértices y su longitud
+vertices = grafo.lista_de_vertices
