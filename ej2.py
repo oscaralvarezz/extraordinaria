@@ -6,7 +6,7 @@ def main():
             self.name = name
             self.rango = rango
             self.calificacion()
-            print('¡Se ha creado una armadura con exito!')
+            print('¡Se ha creado una armadura con éxito!')
 
         #creamos una función para calificar las armaduras
         def calificacion(self):
