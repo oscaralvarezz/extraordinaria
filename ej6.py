@@ -1,3 +1,5 @@
+#usamos ejercicio hecho anteriormente con breves cambios.
+
 def main():
     #creamos una función para determinar el valor máximo de la mochila según valores y pesos de los objetos.
     def mochila(pesos, valores, capacidad):
