@@ -12,9 +12,9 @@ class ArtefactosValiosos():
             return 'El Artefacto Valioso: {} con un peso de {} Kg, un precio de: {} euros, y una fecha de caducidad: {}'.format(self.nombre, self.peso, self.precio, self.caducidad)
         
 #Asignamos los valores y características de los elementos.
-elemento1= ArtefactosValiosos(10, 'Artefacto 1', 50, '01/07/2020')
-elemento2= ArtefactosValiosos(20, 'Artefacto 2', 600, '01/09/2020')
-elemento3= ArtefactosValiosos(30, 'Artefacto 3', 30, '01/08/2020')
+elemento1= ArtefactosValiosos(30, 'Artefacto 1', 50, '01/07/2020')
+elemento2= ArtefactosValiosos(40, 'Artefacto 2', 600, '01/09/2020')
+elemento3= ArtefactosValiosos(10, 'Artefacto 3', 30, '01/08/2020')
 
 Lista = [elemento1, elemento2, elemento3]
 for i in Lista: 
