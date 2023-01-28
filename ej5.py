@@ -1,5 +1,4 @@
 #usamos repositorio de repaso para examen para hacer este ejercicio.
-
 def main():
   
 #Creamos una función que nos de falso si la mochila esta vacía.
